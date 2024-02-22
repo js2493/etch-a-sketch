@@ -1,14 +1,18 @@
 const CELL_SIZE = "15px";
 const CELL_MARGIN = "0.25px";
 const NUM_CELLS = 50
+const COLOR_SIZE = "25px";
+const SELECTED_COLOR_SIZE = "30px";
+const colors = ["red", "blue", "green", "orange", "yellow", "purple", "saddlebrown", "black"];
+const lighterColors = {"red":"LightCoral", "blue":"LightBlue", "green":"OliveDrab", "orange":"NavajoWhite", "yellow":"PaleGoldenRod", "purple":"Plum", "black":"Gray", "saddlebrown":"Tan"}
 
-let container = document.createElement("div")
+let container = document.createElement("div");
 container.style.display = "flex";
-container.style.flexDirection = "column";
-container.style.justifyContent = "center"
-container.style.alignItems = "center"
-container.style.height = "100vh"
-document.body.appendChild(container);
+container.style.justifyContent = "center";
+container.style.alignItems = "center";
+container.style.height = "100vh";
+
+document.body.appendChild(container)
 
 let mouseDown = false;
 document.addEventListener("mousedown", () => {
@@ -19,43 +23,121 @@ document.addEventListener("mouseup", () => {
     mouseDown = false;
 });
 
+let lastSelectedColor;
+
+// color changing
+let colorBox = document.createElement("div");
+colorBox.style.display = "flex";
+colorBox.style.flex = "1";
+colorBox.style.flexDirection = "column";
+colorBox.style.justifyContent = "center";
+colorBox.style.alignItems = "center";
+colorBox.style.margin = `0 100px`;
+container.appendChild(colorBox);
+for (let color of colors) {
+    let colorCell = document.createElement("div")
+    colorCell.id = `${color}`;
+    colorCell.style.width = COLOR_SIZE;
+    colorCell.style.height = COLOR_SIZE;
+    colorCell.style.margin = `${CELL_MARGIN} 0`;
+    colorCell.style.backgroundColor = color;
+    colorBox.appendChild(colorCell);
+}
+lastSelectedColor = document.getElementById("black");
+lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
+lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
+
+colorBox.addEventListener("click", (event) => {
+    lastSelectedColor.style.width = COLOR_SIZE;
+    lastSelectedColor.style.height = COLOR_SIZE;
+    lastSelectedColor = event.target
+    lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
+    lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
+    event.stopPropagation();
+})
+
+
 // create cells
+let box = document.createElement("div");
+box.style.display = "flex";
+box.style.flex = "2"
+box.style.flexDirection = "column";
+box.style.justifyContent = "center";
+box.style.alignItems = "center";
+box.style.height = "92vh"
+box.style.width = "92vh"
+box.style.width = box.style.height;
+box.style.margin = `3vh 0`
+box.id = "center-box";
+container.appendChild(box);
+
+let cellSize = `${90/NUM_CELLS}vh`
 for (let i = 0; i < NUM_CELLS; i++) {
     let row = document.createElement("div");
+    box.appendChild(row);
     row.classList.add("container");
     row.style.display = "flex";
     row.style.margin = `${CELL_MARGIN} 0`
+    row.style.height = "100%"
+    row.style.width = row.style.height
     for (let j = 0; j < NUM_CELLS; j++) {
         let cell = document.createElement("div");
-        cell.clicked = false;
+        row.appendChild(cell);
         cell.style.backgroundColor = "Gainsboro";
-        cell.style.width = CELL_SIZE
-        cell.style.height = CELL_SIZE
+        cell.currentColor = "Gainsboro"
+        cell.style.height = cellSize
+        cell.style.width = cellSize
         cell.style.margin = `0 ${CELL_MARGIN}`
+
         cell.addEventListener("mouseenter", () => {
             if (mouseDown) {
-                cell.style.backgroundColor = "red";
-                cell.clicked = true;
+                cell.style.backgroundColor = lastSelectedColor.id;
+                cell.currentColor = lastSelectedColor.id
             }
-            else if (!cell.clicked) { 
-                cell.style.backgroundColor = "black"; 
+            else {
+                cell.style.backgroundColor = lighterColors[lastSelectedColor.id];
             }
         })
         cell.addEventListener("mouseleave", () => {
-            if (!cell.clicked) {
                 setTimeout(() => {
-                    cell.style.backgroundColor = "Gainsboro";
+                    cell.style.backgroundColor = cell.currentColor;
                 }, 40);
-            }   
-        })
+        })   
         cell.addEventListener("mousedown", () => {
-            cell.style.backgroundColor = "red";
-            cell.clicked = true;
+            cell.style.backgroundColor = lastSelectedColor.id;
+            cell.currentColor = lastSelectedColor.id
         })
-        
-
-        row.appendChild(cell);
     }
-    container.appendChild(row);
+    
 }
+
+// reset button
+let rightBox = document.createElement("div");
+container.appendChild(rightBox);
+rightBox.style.display = "flex";
+rightBox.style.flex = "1";
+rightBox.style.flexDirection = "column"
+rightBox.style.justifyContent = "center";
+rightBox.style.alignItems = "center";
+rightBox.style.margin = `0 80px`;
+
+let resetBtn = document.createElement("button")
+resetBtn.textContent = "RESET";
+resetBtn.style.height = "40px";
+resetBtn.style.width = "80px";
+rightBox.appendChild(resetBtn);
+resetBtn.addEventListener("click", resetCells);
+
+function resetCells(){
+    let centerBox = document.getElementById("center-box");
+    let rows = centerBox.childNodes;
+    for (let row of rows) {
+        let cells = row.childNodes;
+        for (let cell of cells) {
+            cell.style.backgroundColor = "Gainsboro";
+            cell.currentColor = "Gainsboro"
+        }
+    }
+}
+
 
