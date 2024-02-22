@@ -1,6 +1,5 @@
-const CELL_SIZE = "15px";
 const CELL_MARGIN = "0.25px";
-const NUM_CELLS = 50
+let numCells = 50
 const COLOR_SIZE = "25px";
 const SELECTED_COLOR_SIZE = "30px";
 const colors = ["red", "blue", "green", "orange", "yellow", "purple", "saddlebrown", "black"];
@@ -70,48 +69,54 @@ box.style.width = box.style.height;
 box.style.margin = `3vh 0`
 box.id = "center-box";
 container.appendChild(box);
+redrawCells();
 
-let cellSize = `${90/NUM_CELLS}vh`
-for (let i = 0; i < NUM_CELLS; i++) {
-    let row = document.createElement("div");
-    box.appendChild(row);
-    row.classList.add("container");
-    row.style.display = "flex";
-    row.style.margin = `${CELL_MARGIN} 0`
-    row.style.height = "100%"
-    row.style.width = row.style.height
-    for (let j = 0; j < NUM_CELLS; j++) {
-        let cell = document.createElement("div");
-        row.appendChild(cell);
-        cell.style.backgroundColor = "Gainsboro";
-        cell.currentColor = "Gainsboro"
-        cell.style.height = cellSize
-        cell.style.width = cellSize
-        cell.style.margin = `0 ${CELL_MARGIN}`
+function redrawCells(){
+    while (box.hasChildNodes()){
+        box.firstChild.remove();
+    }
+    let cellSize = `${90/numCells}vh`
+    for (let i = 0; i < numCells; i++) {
+        let row = document.createElement("div");
+        box.appendChild(row);
+        row.classList.add("container");
+        row.style.display = "flex";
+        row.style.margin = `${CELL_MARGIN} 0`
+        row.style.height = "100%"
+        row.style.width = row.style.height
+        for (let j = 0; j < numCells; j++) {
+            let cell = document.createElement("div");
+            row.appendChild(cell);
+            cell.style.backgroundColor = "Gainsboro";
+            cell.currentColor = "Gainsboro"
+            cell.style.height = cellSize
+            cell.style.width = cellSize
+            cell.style.margin = `0 ${CELL_MARGIN}`
 
-        cell.addEventListener("mouseenter", () => {
-            if (mouseDown) {
+            cell.addEventListener("mouseenter", () => {
+                if (mouseDown) {
+                    cell.style.backgroundColor = lastSelectedColor.id;
+                    cell.currentColor = lastSelectedColor.id
+                }
+                else {
+                    cell.style.backgroundColor = lighterColors[lastSelectedColor.id];
+                }
+            })
+            cell.addEventListener("mouseleave", () => {
+                    setTimeout(() => {
+                        cell.style.backgroundColor = cell.currentColor;
+                    }, 40);
+            })   
+            cell.addEventListener("mousedown", () => {
                 cell.style.backgroundColor = lastSelectedColor.id;
                 cell.currentColor = lastSelectedColor.id
-            }
-            else {
-                cell.style.backgroundColor = lighterColors[lastSelectedColor.id];
-            }
-        })
-        cell.addEventListener("mouseleave", () => {
-                setTimeout(() => {
-                    cell.style.backgroundColor = cell.currentColor;
-                }, 40);
-        })   
-        cell.addEventListener("mousedown", () => {
-            cell.style.backgroundColor = lastSelectedColor.id;
-            cell.currentColor = lastSelectedColor.id
-        })
+            })
+        }
+        
     }
-    
 }
 
-// reset button
+// other options
 let rightBox = document.createElement("div");
 container.appendChild(rightBox);
 rightBox.style.display = "flex";
@@ -120,11 +125,14 @@ rightBox.style.flexDirection = "column"
 rightBox.style.justifyContent = "center";
 rightBox.style.alignItems = "center";
 rightBox.style.margin = `0 80px`;
+rightBox.style.height = "100%"
+rightBox.style.gap = "2vh"
 
 let resetBtn = document.createElement("button")
 resetBtn.textContent = "RESET";
-resetBtn.style.height = "40px";
-resetBtn.style.width = "80px";
+resetBtn.style.height = "3vh";
+resetBtn.style.width = "8vh";
+resetBtn.style.fontSize = "1vh"
 rightBox.appendChild(resetBtn);
 resetBtn.addEventListener("click", resetCells);
 
@@ -139,5 +147,19 @@ function resetCells(){
         }
     }
 }
+
+let inputGridSize = document.createElement("button");
+inputGridSize.style.height = "3vh";
+inputGridSize.style.width = "8vh";
+inputGridSize.textContent = "CHANGE GRID"
+inputGridSize.style.fontSize = "1vh"
+inputGridSize.addEventListener("click", (event) => {
+    numCells = window.prompt("Enter new grid length: ");
+    redrawCells();
+    resetCells();
+})
+rightBox.appendChild(inputGridSize)
+let inputValue = inputGridSize.value;
+console.log(inputValue);
 
 
