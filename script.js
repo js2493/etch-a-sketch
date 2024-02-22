@@ -1,9 +1,9 @@
-const CELL_MARGIN = "0.25px";
 let numCells = 50
 const COLOR_SIZE = "25px";
+const DEFAULT_COLOR = "#e6e6e6";
 const SELECTED_COLOR_SIZE = "30px";
-const colors = ["red", "blue", "green", "orange", "yellow", "purple", "saddlebrown", "black"];
-const lighterColors = {"red":"LightCoral", "blue":"LightBlue", "green":"OliveDrab", "orange":"NavajoWhite", "yellow":"PaleGoldenRod", "purple":"Plum", "black":"Gray", "saddlebrown":"Tan"}
+const colors = ["red", "blue", "green", "orange", "yellow", "purple", "saddlebrown", "black", "#e6e6e6"];
+const lighterColors = {"red":"LightCoral", "blue":"LightBlue", "green":"OliveDrab", "orange":"NavajoWhite", "yellow":"PaleGoldenRod", "purple":"Plum", "black":"Gray", "saddlebrown":"Tan", "#e6e6e6":"ghostwhite"};
 
 let container = document.createElement("div");
 container.style.display = "flex";
@@ -32,13 +32,14 @@ colorBox.style.flexDirection = "column";
 colorBox.style.justifyContent = "center";
 colorBox.style.alignItems = "center";
 colorBox.style.margin = `0 100px`;
+colorBox.style.height = "100vh"
 container.appendChild(colorBox);
 for (let color of colors) {
     let colorCell = document.createElement("div")
     colorCell.id = `${color}`;
     colorCell.style.width = COLOR_SIZE;
     colorCell.style.height = COLOR_SIZE;
-    colorCell.style.margin = `${CELL_MARGIN} 0`;
+    colorCell.style.margin = `1px 0`;
     colorCell.style.backgroundColor = color;
     colorBox.appendChild(colorCell);
 }
@@ -47,12 +48,14 @@ lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
 lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
 
 colorBox.addEventListener("click", (event) => {
-    lastSelectedColor.style.width = COLOR_SIZE;
-    lastSelectedColor.style.height = COLOR_SIZE;
-    lastSelectedColor = event.target
-    lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
-    lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
-    event.stopPropagation();
+    if (colors.includes(event.target.id)) {
+        lastSelectedColor.style.width = COLOR_SIZE;
+        lastSelectedColor.style.height = COLOR_SIZE;
+        lastSelectedColor = event.target
+        lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
+        lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
+        event.stopPropagation();
+    }
 })
 
 
@@ -81,17 +84,18 @@ function redrawCells(){
         box.appendChild(row);
         row.classList.add("container");
         row.style.display = "flex";
-        row.style.margin = `${CELL_MARGIN} 0`
-        row.style.height = "100%"
-        row.style.width = row.style.height
+        row.style.height = cellSize
+        row.style.justifyContent = "center";
+        row.style.alignItems = "center";
+        row.style.width = "100vh"
         for (let j = 0; j < numCells; j++) {
             let cell = document.createElement("div");
             row.appendChild(cell);
-            cell.style.backgroundColor = "Gainsboro";
-            cell.currentColor = "Gainsboro"
+            cell.style.backgroundColor = DEFAULT_COLOR;
+            cell.currentColor = DEFAULT_COLOR
             cell.style.height = cellSize
             cell.style.width = cellSize
-            cell.style.margin = `0 ${CELL_MARGIN}`
+
 
             cell.addEventListener("mouseenter", () => {
                 if (mouseDown) {
@@ -130,8 +134,8 @@ rightBox.style.gap = "2vh"
 
 let resetBtn = document.createElement("button")
 resetBtn.textContent = "RESET";
-resetBtn.style.height = "3vh";
-resetBtn.style.width = "8vh";
+resetBtn.style.height = "5vh";
+resetBtn.style.width = "12vh";
 resetBtn.style.fontSize = "1vh"
 rightBox.appendChild(resetBtn);
 resetBtn.addEventListener("click", resetCells);
@@ -142,21 +146,25 @@ function resetCells(){
     for (let row of rows) {
         let cells = row.childNodes;
         for (let cell of cells) {
-            cell.style.backgroundColor = "Gainsboro";
-            cell.currentColor = "Gainsboro"
+            cell.style.backgroundColor = DEFAULT_COLOR;
+            cell.currentColor = DEFAULT_COLOR
         }
     }
 }
 
 let inputGridSize = document.createElement("button");
-inputGridSize.style.height = "3vh";
-inputGridSize.style.width = "8vh";
-inputGridSize.textContent = "CHANGE GRID"
+inputGridSize.style.height = "5vh";
+inputGridSize.style.width = "12vh";
+inputGridSize.textContent = "CHANGE GRID SIZE"
 inputGridSize.style.fontSize = "1vh"
 inputGridSize.addEventListener("click", (event) => {
-    numCells = window.prompt("Enter new grid length: ");
-    redrawCells();
-    resetCells();
+    let input = window.prompt("Enter new grid size, up to 250: ");
+    input = parseInt(input)
+    if (!isNaN(input) && input < 251 && input > 0) {
+        numCells = input;
+        redrawCells();
+        resetCells();
+    }
 })
 rightBox.appendChild(inputGridSize)
 let inputValue = inputGridSize.value;
