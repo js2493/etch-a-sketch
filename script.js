@@ -1,7 +1,6 @@
 let numCells = 50
-const COLOR_SIZE = "25px";
 const DEFAULT_COLOR = "#e6e6e6";
-const SELECTED_COLOR_SIZE = "30px";
+const COLOR_CELL_TOTAL_SIZE = 35;
 const colors = ["red", "blue", "green", "orange", "yellow", "purple", "saddlebrown", "black", "#e6e6e6"];
 const lighterColors = {"red":"LightCoral", "blue":"LightBlue", "green":"OliveDrab", "orange":"NavajoWhite", "yellow":"PaleGoldenRod", "purple":"Plum", "black":"Gray", "saddlebrown":"Tan", "#e6e6e6":"ghostwhite"};
 
@@ -32,28 +31,27 @@ colorBox.style.flexDirection = "column";
 colorBox.style.justifyContent = "center";
 colorBox.style.alignItems = "center";
 colorBox.style.margin = `0 100px`;
-colorBox.style.height = "100vh"
 container.appendChild(colorBox);
 for (let color of colors) {
     let colorCell = document.createElement("div")
     colorCell.id = `${color}`;
-    colorCell.style.width = COLOR_SIZE;
-    colorCell.style.height = COLOR_SIZE;
+    colorCell.style.width = `${COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
+    colorCell.style.height = `${COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
     colorCell.style.margin = `1px 0`;
     colorCell.style.backgroundColor = color;
     colorBox.appendChild(colorCell);
 }
 lastSelectedColor = document.getElementById("black");
-lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
-lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
+lastSelectedColor.style.width = `${1.25*COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
+lastSelectedColor.style.height = `${1.25*COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
 
 colorBox.addEventListener("click", (event) => {
     if (colors.includes(event.target.id)) {
-        lastSelectedColor.style.width = COLOR_SIZE;
-        lastSelectedColor.style.height = COLOR_SIZE;
+        lastSelectedColor.style.width = `${COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
+        lastSelectedColor.style.height = `${COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
         lastSelectedColor = event.target
-        lastSelectedColor.style.width = SELECTED_COLOR_SIZE;
-        lastSelectedColor.style.height = SELECTED_COLOR_SIZE;
+        lastSelectedColor.style.width = `${1.25*COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
+        lastSelectedColor.style.height = `${1.25*COLOR_CELL_TOTAL_SIZE/colors.length}vh`;
         event.stopPropagation();
     }
 })
